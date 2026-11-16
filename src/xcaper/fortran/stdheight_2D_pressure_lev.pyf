@@ -1,0 +1,55 @@
+!    -*- f90 -*-
+! f2py signature file for the xcaper extension module `stdheight_2D_pressure_lev`.
+! Note: the context of this file is case sensitive.
+!
+! Every driver is declared `threadsafe`, i.e. it releases the Python GIL
+! while the Fortran code runs, so calls can run in parallel from dask
+! worker threads.
+
+python module stdheight_2D_pressure_lev
+    interface
+        subroutine loop_stdheight_pl(p,t,td,ps,ts,tds,hin,start_3d,nk,nx,h,hs)
+            threadsafe
+            real(kind=8) dimension(nk,nx),intent(in) :: p
+            real(kind=8) dimension(nk,nx),intent(in),depend(nk,nx) :: t
+            real(kind=8) dimension(nk,nx),intent(in),depend(nk,nx) :: td
+            real(kind=8) dimension(nx),intent(in),depend(nx) :: ps
+            real(kind=8) dimension(nx),intent(in),depend(nx) :: ts
+            real(kind=8) dimension(nx),intent(in),depend(nx) :: tds
+            real(kind=8) dimension(nx),intent(in),depend(nx) :: hin
+            integer dimension(nx),intent(in),depend(nx) :: start_3d
+            integer, optional,intent(in),check(shape(p,0)==nk),depend(p) :: nk=shape(p,0)
+            integer, optional,intent(in),check(shape(p,1)==nx),depend(p) :: nx=shape(p,1)
+            real(kind=8) dimension(nk,nx),intent(out),depend(nk,nx) :: h
+            real(kind=8) dimension(nx),intent(out),depend(nx) :: hs
+        end subroutine loop_stdheight_pl
+        subroutine loop_stdheight_pl1d(t,td,p,ps,ts,tds,hin,start_3d,nk,nx,h,hs)
+            threadsafe
+            real(kind=8) dimension(nk,nx),intent(in) :: t
+            real(kind=8) dimension(nk,nx),intent(in),depend(nk,nx) :: td
+            real(kind=8) dimension(nk,1),intent(in),depend(nk) :: p
+            real(kind=8) dimension(nx),intent(in),depend(nx) :: ps
+            real(kind=8) dimension(nx),intent(in),depend(nx) :: ts
+            real(kind=8) dimension(nx),intent(in),depend(nx) :: tds
+            real(kind=8) dimension(nx),intent(in),depend(nx) :: hin
+            integer dimension(nx),intent(in),depend(nx) :: start_3d
+            integer, optional,intent(in),check(shape(t,0)==nk),depend(t) :: nk=shape(t,0)
+            integer, optional,intent(in),check(shape(t,1)==nx),depend(t) :: nx=shape(t,1)
+            real(kind=8) dimension(nk,nx),intent(out),depend(nk,nx) :: h
+            real(kind=8) dimension(nx),intent(out),depend(nx) :: hs
+        end subroutine loop_stdheight_pl1d
+        subroutine stdheight_pl(p,t,td,ps,ts,tds,hin,nk,h,hs)
+            threadsafe
+            real(kind=8) dimension(nk),intent(in) :: p
+            real(kind=8) dimension(nk),intent(in),depend(nk) :: t
+            real(kind=8) dimension(nk),intent(in),depend(nk) :: td
+            real(kind=8) intent(in) :: ps
+            real(kind=8) intent(in) :: ts
+            real(kind=8) intent(in) :: tds
+            real(kind=8) intent(in) :: hin
+            integer, optional,intent(in),check(len(p)>=nk),depend(p) :: nk=len(p)
+            real(kind=8) dimension(nk),intent(out),depend(nk) :: h
+            real(kind=8) intent(out) :: hs
+        end subroutine stdheight_pl
+    end interface
+end python module stdheight_2D_pressure_lev

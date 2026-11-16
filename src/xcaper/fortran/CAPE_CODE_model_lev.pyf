@@ -1,0 +1,66 @@
+!    -*- f90 -*-
+! f2py signature file for the xcaper extension module `CAPE_CODE_model_lev`.
+! Note: the context of this file is case sensitive.
+!
+! Every driver is declared `threadsafe`, i.e. it releases the Python GIL
+! while the Fortran code runs, so calls can run in parallel from dask
+! worker threads.
+
+python module CAPE_CODE_model_lev
+    interface
+        subroutine loopcape_ml(p3d_in,t3d_in,td3d_in,ps1d_in,ts1d_in,tds1d_in,pinc,source,ml_depth,adiabat,nk_in,n2,cape3d,cin3d,mulvl3d,z_out3d)
+            threadsafe
+            real(kind=4) dimension(nk_in,n2),intent(in) :: p3d_in
+            real(kind=4) dimension(nk_in,n2),intent(in),depend(nk_in,n2) :: t3d_in
+            real(kind=4) dimension(nk_in,n2),intent(in),depend(nk_in,n2) :: td3d_in
+            real(kind=4) dimension(n2),intent(in),depend(n2) :: ps1d_in
+            real(kind=4) dimension(n2),intent(in),depend(n2) :: ts1d_in
+            real(kind=4) dimension(n2),intent(in),depend(n2) :: tds1d_in
+            real(kind=4) intent(in) :: pinc
+            integer intent(in) :: source
+            real(kind=4) intent(in) :: ml_depth
+            integer intent(in) :: adiabat
+            integer, optional,intent(in),check(shape(p3d_in,0)==nk_in),depend(p3d_in) :: nk_in=shape(p3d_in,0)
+            integer, optional,intent(in),check(shape(p3d_in,1)==n2),depend(p3d_in) :: n2=shape(p3d_in,1)
+            real(kind=4) dimension(n2),intent(out),depend(n2) :: cape3d
+            real(kind=4) dimension(n2),intent(out),depend(n2) :: cin3d
+            integer dimension(n2),intent(out),depend(n2) :: mulvl3d
+            real(kind=4) dimension(n2),intent(out),depend(n2) :: z_out3d
+        end subroutine loopcape_ml
+        subroutine getcape_ml(p_in_a,t_in_a,td_in_a,ps_in_b,ts_in_b,tds_in_b,pinc,source,ml_depth,adiabat,nk_in,cape,cin,mulvl,z_out)
+            threadsafe
+            real(kind=4) dimension(nk_in),intent(in) :: p_in_a
+            real(kind=4) dimension(nk_in),intent(in),depend(nk_in) :: t_in_a
+            real(kind=4) dimension(nk_in),intent(in),depend(nk_in) :: td_in_a
+            real(kind=4) dimension(1),intent(in) :: ps_in_b
+            real(kind=4) dimension(1),intent(in) :: ts_in_b
+            real(kind=4) dimension(1),intent(in) :: tds_in_b
+            real(kind=4) intent(in) :: pinc
+            integer intent(in) :: source
+            real(kind=4) intent(in) :: ml_depth
+            integer intent(in) :: adiabat
+            integer, optional,intent(in),check(len(p_in_a)>=nk_in),depend(p_in_a) :: nk_in=len(p_in_a)
+            real(kind=4) intent(out) :: cape
+            real(kind=4) intent(out) :: cin
+            integer intent(out) :: mulvl
+            real(kind=4) intent(out) :: z_out
+        end subroutine getcape_ml
+        function getqvs(p,t)
+            real(kind=4) :: p
+            real(kind=4) :: t
+            real(kind=4) :: getqvs
+        end function getqvs
+        function getqvi(p,t)
+            real(kind=4) :: p
+            real(kind=4) :: t
+            real(kind=4) :: getqvi
+        end function getqvi
+        function getthe(p,t,td,q)
+            real(kind=4) :: p
+            real(kind=4) :: t
+            real(kind=4) :: td
+            real(kind=4) :: q
+            real(kind=4) :: getthe
+        end function getthe
+    end interface
+end python module CAPE_CODE_model_lev

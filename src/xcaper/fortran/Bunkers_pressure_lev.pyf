@@ -1,0 +1,46 @@
+!    -*- f90 -*-
+! f2py signature file for the xcaper extension module `Bunkers_pressure_lev`.
+! Note: the context of this file is case sensitive.
+!
+! Every driver is declared `threadsafe`, i.e. it releases the Python GIL
+! while the Fortran code runs, so calls can run in parallel from dask
+! worker threads.
+
+python module Bunkers_pressure_lev
+    interface
+        subroutine bunkers_loop_pl(u3d,v3d,aglh3d,us,vs,aglhs,start_3d,nk,n2,rm,lm,mean6kmwind)
+            threadsafe
+            real(kind=4) dimension(nk,n2),intent(in) :: u3d
+            real(kind=4) dimension(nk,n2),intent(in),depend(nk,n2) :: v3d
+            real(kind=4) dimension(nk,n2),intent(in),depend(nk,n2) :: aglh3d
+            real(kind=4) dimension(n2),intent(in),depend(n2) :: us
+            real(kind=4) dimension(n2),intent(in),depend(n2) :: vs
+            real(kind=4) dimension(n2),intent(in),depend(n2) :: aglhs
+            integer dimension(n2),intent(in),depend(n2) :: start_3d
+            integer, optional,intent(in),check(shape(u3d,0)==nk),depend(u3d) :: nk=shape(u3d,0)
+            integer, optional,intent(in),check(shape(u3d,1)==n2),depend(u3d) :: n2=shape(u3d,1)
+            real(kind=4) dimension(2,n2),intent(out),depend(n2) :: rm
+            real(kind=4) dimension(2,n2),intent(out),depend(n2) :: lm
+            real(kind=4) dimension(2,n2),intent(out),depend(n2) :: mean6kmwind
+        end subroutine bunkers_loop_pl
+        subroutine bunkers_calc_pl(u,v,aglh,nk,rm,lm,mean6kmwind)
+            threadsafe
+            real(kind=4) dimension(nk),intent(in) :: u
+            real(kind=4) dimension(nk),intent(in),depend(nk) :: v
+            real(kind=4) dimension(nk),intent(in),depend(nk) :: aglh
+            integer, optional,intent(in),check(len(u)>=nk),depend(u) :: nk=len(u)
+            real(kind=4) dimension(2),intent(out) :: rm
+            real(kind=4) dimension(2),intent(out) :: lm
+            real(kind=4) dimension(2),intent(out) :: mean6kmwind
+        end subroutine bunkers_calc_pl
+        subroutine dinterp2dz(v3d,z,loc,v2d,n2,nz)
+            threadsafe
+            real(kind=4) dimension(nz,n2),intent(in) :: v3d
+            real(kind=4) dimension(nz,n2),intent(in),depend(nz,n2) :: z
+            real(kind=4) intent(in) :: loc
+            real(kind=4) dimension(n2),intent(out),depend(n2) :: v2d
+            integer, optional,check(shape(v3d,1)==n2),depend(v3d) :: n2=shape(v3d,1)
+            integer, optional,check(shape(v3d,0)==nz),depend(v3d) :: nz=shape(v3d,0)
+        end subroutine dinterp2dz
+    end interface
+end python module Bunkers_pressure_lev
