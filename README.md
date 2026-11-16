@@ -260,7 +260,7 @@ where the 0-6 km shear vector is weak (its direction is then ill-defined).
 
 ## Comparing with SounderPy
 
-SounderPy (3.2) and xcaper agree on the thermodynamics, lapse rates and SRH
+SounderPy and xcaper agree on the thermodynamics, lapse rates and SRH
 for the same column and storm motion, but SounderPy's effective-layer SCP and
 STP are not the SPC / SHARPpy definitions:
 
