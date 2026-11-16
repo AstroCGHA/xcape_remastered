@@ -1,0 +1,2 @@
+option('fortran', type: 'feature', value: 'auto',
+       description: 'Build the Fortran extension modules. "auto" builds them when C and Fortran compilers are found; without them xcaper runs on its numba backend.')

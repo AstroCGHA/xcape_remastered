@@ -1,0 +1,59 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below, together with the original xcape (see references)."
+type: software
+title: "xcaper"
+version: "1.0.0"
+doi: "10.5281/zenodo.24269592"
+date-released: 2026-11-16
+abstract: >-
+  xcaper computes convective and severe-weather parameters (CAPE, CIN, LCL, LFC,
+  EL, DCAPE, lapse rates, Bunkers storm motion, storm-relative helicity, bulk
+  shear, streamwise vorticity and streamwiseness, the effective inflow layer and
+  effective-layer parameters, SCP, STP, ESCP, ESTP, EHI, WMAXSHEAR) for gridded
+  data such as ERA5, with Fortran and numba backends and dask parallelism. It is
+  a modernised and extended derivative of xcape 0.1.4.
+authors:
+  - given-names: Generich
+    family-names: Capuli
+    affiliation: "Philippine Atmospheric, Geophysical and Astronomical Services Administration (DOST-PAGASA)"
+    orcid: "https://orcid.org/0000-0003-1253-7043"
+license: MIT
+repository-code: "https://github.com/AstroCGHA/xcape_remastered"
+keywords:
+  - CAPE
+  - severe weather
+  - supercell composite parameter
+  - significant tornado parameter
+  - effective inflow layer
+  - storm-relative helicity
+  - streamwise vorticity
+  - DCAPE
+  - ERA5
+  - reanalysis
+  - numba
+  - dask
+  - xarray
+references:
+  - type: software
+    title: "xcape"
+    version: "v0.1.4"
+    authors:
+      - given-names: Chiara
+        family-names: Lepore
+        orcid: "https://orcid.org/0000-0002-1606-6982"
+      - given-names: John
+        family-names: Allen
+        orcid: "https://orcid.org/0000-0002-2036-0666"
+      - given-names: Ryan
+        family-names: Abernathey
+        orcid: "https://orcid.org/0000-0001-5999-4917"
+    doi: "10.5281/zenodo.5270332"
+    repository-code: "https://github.com/xgcm/xcape"
+    license: MIT
+  - type: software
+    title: "getcape"
+    authors:
+      - given-names: George H.
+        family-names: Bryan
+        affiliation: "National Center for Atmospheric Research"
+    url: "https://www2.mmm.ucar.edu/people/bryan/Code/getcape.F"

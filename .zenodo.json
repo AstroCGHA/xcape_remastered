@@ -1,0 +1,61 @@
+{
+  "title": "xcaper 1.0.0: convective and severe-weather parameters from gridded data (ERA5) for Python 3.10+",
+  "upload_type": "software",
+  "version": "1.0.0",
+  "description": "<p><strong>xcaper</strong> is a modernised and extended derivative of xcape (Lepore, Allen &amp; Abernathey; v0.1.4, doi:10.5281/zenodo.5270332). It computes convective and severe-weather parameters on gridded datasets, mainly ERA5 reanalysis, from numpy, dask or xarray arrays. Fortran kernels run alongside a numba backend, and large domains are processed in parallel chunks with dask.</p>\n<p><strong>What is new compared with xcape 0.1.4</strong></p>\n<ul>\n<li>Builds on modern Python (meson-python instead of numpy.distutils), with support for NumPy 2. The Fortran compiler is optional: without one, a pure numba backend gives the same results to round-off.</li>\n<li>Bug fixes in the original code: uninitialised accumulators in the Bunkers storm-motion routine, a broken dask pathway for pressure-level data, and unsafe STOP/PRINT statements in the Fortran kernels.</li>\n<li>New parameters: surface-based, mixed-layer and most-unstable CAPE and CIN; LCL, LFC and equilibrium level; DCAPE; lapse rates (virtual temperature); Bunkers storm motion (standard 0–6 km, shallow 0–3 km, or effective-layer after Bunkers et al. 2014); storm-relative helicity, bulk wind difference, critical angle; streamwise vorticity and streamwiseness.</li>\n<li>Effective inflow layer (Thompson et al. 2007) and its parameters: ESRH, EBWD, effective-layer streamwise vorticity and streamwiseness, ESCP and ESTP. Fixed-layer SCP, STP, EHI and WMAXSHEAR are also included.</li>\n<li>An ERA5 workflow: download a bounding box from the Copernicus Climate Data Store, combine the single-level and pressure-level fields, compute 64 parameters, and write CF-compliant NetCDF. It is available as a Python API and as a command-line tool (<code>xcaper-era5</code>).</li>\n</ul>\n<p><strong>Validation</strong></p>\n<ul>\n<li>116 automated tests, plus the unchanged xcape 0.1.4 test suite (all passing).</li>\n<li>The Fortran results reproduce xcape 0.1.4 exactly for CAPE, CIN, heights and Bunkers motion (SRH to 1e-13). The numba backend matches the Fortran backend to round-off (CAPE within 0.25 J/kg; CIN can differ only where parcel buoyancy touches zero within single-precision resolution, 2 of 29,141 test columns).</li>\n<li>On an ERA5 case over the Philippine region (29,141 columns): the effective inflow layer is identical to a brute-force search; DCAPE agrees with MetPy to within 0.3% (median); LFC and EL agree to within 1 hPa (median); lapse rates match SounderPy.</li>\n<li>Identical results on Python 3.10–3.14 and with the oldest and newest supported dependency versions (Linux x86_64); the Python 3.15 pre-release also passes.</li>\n</ul>\n<p><strong>Conventions and limitations</strong></p>\n<ul>\n<li>CIN is reported as a positive number. Composite indices use right-mover SRH (Northern Hemisphere convention).</li>\n<li>The mixed-layer parcel is 500 m deep and the most-unstable parcel is taken below 500 hPa; both differ from the SPC conventions (100 hPa and 300 hPa).</li>\n<li>ESCP and ESTP follow the SPC/SHARPpy definitions. Effective composites from other tools that use different shear layers will not match.</li>\n</ul>\n<p><strong>Credits.</strong> Parcel ascent: George H. Bryan's getcape (NCAR/UCAR). Original xcape by Chiara Lepore, John Allen and Ryan Abernathey. Parameter definitions follow Bunkers et al. (2000, 2014), Thompson et al. (2003, 2004, 2007, 2012) and Taszarek et al. (2020).</p>\n<p><strong>Data.</strong> Results computed from ERA5 contain modified Copernicus Climate Change Service information, licensed under CC-BY 4.0. Neither the European Commission nor ECMWF is responsible for any use that may be made of the Copernicus information or data it contains.</p>",
+  "creators": [
+    {
+      "name": "Capuli, Generich",
+      "affiliation": "Philippine Atmospheric, Geophysical and Astronomical Services Administration (DOST-PAGASA)",
+      "orcid": "0000-0003-1253-7043"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Lepore, Chiara",
+      "orcid": "0000-0002-1606-6982",
+      "type": "Other"
+    },
+    {
+      "name": "Allen, John",
+      "orcid": "0000-0002-2036-0666",
+      "type": "Other"
+    },
+    {
+      "name": "Abernathey, Ryan",
+      "orcid": "0000-0001-5999-4917",
+      "type": "Other"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "CAPE",
+    "severe weather",
+    "supercell composite parameter",
+    "significant tornado parameter",
+    "effective inflow layer",
+    "storm-relative helicity",
+    "streamwise vorticity",
+    "DCAPE",
+    "ERA5",
+    "reanalysis",
+    "numba",
+    "dask",
+    "xarray",
+    "Fortran",
+    "Philippines"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.5270332",
+      "relation": "isDerivedFrom",
+      "scheme": "doi",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://github.com/AstroCGHA/xcape_remastered",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

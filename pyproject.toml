@@ -1,0 +1,64 @@
+[build-system]
+build-backend = "mesonpy"
+requires = [
+    "meson-python>=0.15.0",
+    "meson>=1.1.0",
+    "numpy>=2.0.0",
+]
+
+[project]
+name = "xcaper"
+version = "1.0.0"
+description = "Convective and severe-weather parameters (CAPE, effective-layer SCP/STP, SRH, streamwise vorticity, DCAPE) for gridded data such as ERA5, with Fortran, numba and dask"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [{ name = "Generich Capuli" }]
+# xcaper is derived from xcape 0.1.4 by Chiara Lepore, John Allen and Ryan
+# Abernathey (doi:10.5281/zenodo.5270332); see LICENSE and CITATION.cff.
+keywords = [
+    "CAPE", "CIN", "SRH", "DCAPE", "supercell composite parameter",
+    "significant tornado parameter", "effective inflow layer", "streamwise vorticity",
+    "severe weather", "ERA5", "reanalysis", "dask", "xarray", "numba",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Fortran",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+dependencies = [
+    "numpy>=1.24",
+    "numba>=0.59",
+    "dask[array]>=2023.6",
+    "xarray>=2023.6",
+]
+
+[project.optional-dependencies]
+# ERA5 download through the Copernicus Climate Data Store + NetCDF I/O
+era5 = ["cdsapi>=0.7.2", "netCDF4>=1.6"]
+test = ["pytest>=7", "netCDF4>=1.6"]  # the ERA5 tests write NetCDF
+dev = ["pytest>=7", "cdsapi>=0.7.2", "netCDF4>=1.6", "metpy>=1.5"]
+
+[project.urls]
+Homepage = "https://github.com/AstroCGHA/xcape_remastered"
+Source = "https://github.com/AstroCGHA/xcape_remastered"
+Issues = "https://github.com/AstroCGHA/xcape_remastered/issues"
+Changelog = "https://github.com/AstroCGHA/xcape_remastered/blob/main/CHANGELOG.md"
+"Upstream xcape" = "https://github.com/xgcm/xcape"
+
+[project.scripts]
+xcaper-era5 = "xcaper.era5:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = ["ignore::numba.core.errors.NumbaPerformanceWarning"]
