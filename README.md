@@ -1,6 +1,6 @@
 # xcaper 1.0.1
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24269592.svg)](https://doi.org/10.5281/zenodo.24269592)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24273035.svg)](https://doi.org/10.5281/zenodo.24273035)
 
 **xcaper** computes convective and severe-weather parameters for gridded data
 (numpy, dask, xarray), with a Fortran and a numba backend and a ready-made
@@ -397,9 +397,9 @@ wherever the low-level shear is strong and the deep-layer shear weak.
 If you use xcaper, please cite this release (see `CITATION.cff`) and the
 original xcape:
 
-* Capuli, G. (2026): xcaper (software). Zenodo.
-  [doi:10.5281/zenodo.24269592](https://doi.org/10.5281/zenodo.24269592)
-  (version 1.0.0; the Zenodo record links to every later version)
+* Capuli, G. (2026): xcaper v1.0.1 (software). Zenodo.
+  [doi:10.5281/zenodo.24273035](https://doi.org/10.5281/zenodo.24273035)
+  (version 1.0.0: [doi:10.5281/zenodo.24269592](https://doi.org/10.5281/zenodo.24269592))
 * Lepore, C., Allen, J. and Abernathey, R. (2021): xcape v0.1.4 (software).
   Zenodo. [doi:10.5281/zenodo.5270332](https://doi.org/10.5281/zenodo.5270332)
 
