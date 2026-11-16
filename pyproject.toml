@@ -8,7 +8,7 @@ requires = [
 
 [project]
 name = "xcaper"
-version = "1.0.0"
+version = "1.0.1"
 description = "Convective and severe-weather parameters (CAPE, effective-layer SCP/STP, SRH, streamwise vorticity, DCAPE) for gridded data such as ERA5, with Fortran, numba and dask"
 readme = "README.md"
 license = { file = "LICENSE" }

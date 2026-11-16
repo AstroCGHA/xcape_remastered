@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.1 (2026-11-16)
+
+Examples, installation guide and two fixes; the computed results are unchanged.
+
+* Build: the editable development install (`pip install --no-build-isolation
+  -e .`) failed when the virtual environment was inside the project folder
+  (e.g. `./.venv`), because Meson refuses absolute paths into the source tree.
+  NumPy's header directories are now given relative to the build file in that
+  case.
+* Tests: the Fortran SRH tests compare with a relative tolerance of 1e-6
+  instead of 5 decimals. gfortran 15 (GitHub's ubuntu-26.04 runners) differs
+  from the stored xcape 0.1 reference by up to 2.5e-7 relative, within
+  single-precision rounding; the results themselves are unchanged.
+* Examples: `sounding_from_csv.py` (with a sample sounding), `building_blocks.py`,
+  `era5_point_values.py`, `storm_motion_comparison.py`, `batch_local_files.py`,
+  and `examples/README.md`.
+* README: step-by-step installation guide, update/uninstall and
+  troubleshooting; Zenodo DOI and citation.
+
 ## 1.0.0 (first release of xcaper)
 
 xcaper is a modernised and extended derivative of xcape 0.1.4 (Lepore, Allen

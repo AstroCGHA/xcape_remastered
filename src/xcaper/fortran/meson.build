@@ -8,14 +8,27 @@
 fc = meson.get_compiler('fortran')
 cc = meson.get_compiler('c')
 
-# NumPy / f2py headers
+# NumPy / f2py headers.  Meson refuses absolute paths that point into the
+# source tree, which is where they point when the virtual environment lives
+# inside the project folder (e.g. ./.venv): give those relative to this
+# directory, everything else (the usual case) as an absolute path.
+_header_dir = '''
+import os, sys
+import numpy, numpy.f2py
+path = numpy.get_include() if sys.argv[1] == "numpy" else numpy.f2py.get_include()
+path = os.path.realpath(path)
+root = os.path.realpath(sys.argv[2])
+here = os.path.realpath(sys.argv[3])
+inside = os.path.commonpath([path, root]) == root
+print(os.path.relpath(path, here) if inside else path)
+'''
 incdir_numpy = run_command(
-  py, ['-c', 'import numpy; print(numpy.get_include())'],
+  py, ['-c', _header_dir, 'numpy', meson.project_source_root(), meson.current_source_dir()],
   check: true,
 ).stdout().strip()
 
 incdir_f2py = run_command(
-  py, ['-c', 'import numpy.f2py; print(numpy.f2py.get_include())'],
+  py, ['-c', _header_dir, 'f2py', meson.project_source_root(), meson.current_source_dir()],
   check: true,
 ).stdout().strip()
 

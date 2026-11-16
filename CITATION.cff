@@ -2,8 +2,11 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below, together with the original xcape (see references)."
 type: software
 title: "xcaper"
-version: "1.0.0"
-doi: "10.5281/zenodo.24269592"
+version: "1.0.1"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24269592"
+    description: "xcaper 1.0.0 on Zenodo; the record links to every later version"
 date-released: 2026-11-16
 abstract: >-
   xcaper computes convective and severe-weather parameters (CAPE, CIN, LCL, LFC,

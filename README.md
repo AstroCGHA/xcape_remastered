@@ -1,4 +1,4 @@
-# xcaper 1.0.0
+# xcaper 1.0.1
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24269592.svg)](https://doi.org/10.5281/zenodo.24269592)
 
@@ -24,21 +24,137 @@ Ryan Abernathey ([doi:10.5281/zenodo.5270332](https://doi.org/10.5281/zenodo.527
 
 ## Install
 
+**Quick start** (Linux or macOS, Python 3.10 or newer):
+
 ```bash
-# needs a C compiler and gfortran for the Fortran backend
-pip install .                 # or: pip install ".[era5]"  to add cdsapi + netCDF4
-pip install ".[dev]"          # + pytest, metpy
-
-# without a Fortran compiler: numba backend only (same results to round-off, see below)
-pip install ".[era5]" -Csetup-args=-Dfortran=disabled
-
-# editable / development install
-pip install --no-build-isolation -e .
-pytest
+python3 -m venv xcaper-env
+source xcaper-env/bin/activate
+pip install "xcaper[era5] @ git+https://github.com/AstroCGHA/xcape_remastered.git@v1.0.1"
+python -c "import xcaper; print(xcaper.__version__)"
 ```
 
-The build uses `meson-python`. `method="auto"` (the default) uses the Fortran
-kernels when they are installed and numba otherwise.
+The step-by-step guide below explains each of these commands and the
+alternatives.
+
+### Step by step
+
+**1. Check Python.** You need Python 3.10 or newer:
+
+```bash
+python3 --version
+```
+
+**2. Install a Fortran compiler (optional, recommended).** With gfortran, xcaper
+builds its Fortran kernels, which reproduce xcape 0.1 exactly. Without it,
+xcaper installs anyway and uses its numba backend instead, which gives the
+same results to round-off (see [Backends and parallelism](#backends-and-parallelism)).
+Nothing else needs a compiler.
+
+| System | Command |
+|---|---|
+| Ubuntu / Debian / WSL | `sudo apt install gfortran` |
+| Fedora / RHEL | `sudo dnf install gcc-gfortran` |
+| conda (any system) | `conda install -c conda-forge compilers` |
+| macOS (not tested) | `brew install gcc` |
+| Windows (not tested) | use WSL (Ubuntu) and the line above, or skip: xcaper then uses numba |
+
+**3. Create an environment.** This keeps xcaper and its dependencies separate
+from the rest of your system. With the standard `venv`:
+
+```bash
+python3 -m venv xcaper-env
+source xcaper-env/bin/activate        # Windows: xcaper-env\Scripts\activate
+python -m pip install --upgrade pip
+```
+
+or with conda:
+
+```bash
+conda create -n xcaper -c conda-forge python=3.13 compilers
+conda activate xcaper
+```
+
+Activate the environment again (`source xcaper-env/bin/activate` or
+`conda activate xcaper`) every time you open a new terminal.
+
+**4. Install xcaper.** Choose one:
+
+```bash
+# a) the 1.0.1 release from GitHub (needs git)
+pip install "xcaper[era5] @ git+https://github.com/AstroCGHA/xcape_remastered.git@v1.0.1"
+
+# b) the latest version on GitHub (needs git)
+pip install "xcaper[era5] @ git+https://github.com/AstroCGHA/xcape_remastered.git"
+
+# c) a downloaded release file (from Zenodo or the GitHub release page)
+pip install "xcaper-1.0.1.tar.gz[era5]"
+```
+
+* `[era5]` also installs `cdsapi` and `netCDF4`, which you need to download ERA5
+  and to read and write NetCDF files. Leave it out for the core package only.
+* pip compiles the package, which takes 1-2 minutes. A C and Fortran compiler
+  is used when found. To skip the Fortran backend on purpose, add
+  `-Csetup-args=-Dfortran=disabled`.
+
+**5. Check the installation.**
+
+```bash
+python -c "import xcaper; from xcaper.core import HAS_FORTRAN; print(xcaper.__version__, 'Fortran:', HAS_FORTRAN)"
+xcaper-era5 --version
+```
+
+This prints `1.0.1 Fortran: True` (or `False` without a Fortran compiler,
+which is fine) and `xcaper 1.0.1`.
+
+**6. Try it.** The example scripts are in the [`examples`](examples/) folder of
+the repository (download it, or clone the repository as in the next
+section). The first one needs no data:
+
+```bash
+python examples/sounding_from_csv.py
+```
+
+The first run takes some extra seconds: numba compiles the kernels once and
+caches them.
+
+**7. Set up ERA5 downloads (only for downloading).** Register at the Copernicus
+Climate Data Store and create `~/.cdsapirc`, see [ERA5 in one call](#era5-in-one-call).
+ERA5 files already on disk need no set-up.
+
+### For development
+
+To edit the code, clone the repository and install it in editable mode:
+changes to the Python files take effect at the next import, and changes to the
+Fortran files are recompiled automatically.
+
+```bash
+git clone https://github.com/AstroCGHA/xcape_remastered.git
+cd xcape_remastered
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install meson-python meson ninja numpy       # build tools, needed first
+pip install --no-build-isolation -e ".[dev]"     # xcaper + pytest, metpy, cdsapi, netCDF4
+pytest                                            # 116 tests, about a minute
+```
+
+### Updating and uninstalling
+
+```bash
+pip install --upgrade --force-reinstall --no-cache-dir "xcaper[era5] @ git+https://github.com/AstroCGHA/xcape_remastered.git"
+pip uninstall xcaper
+```
+
+### Troubleshooting
+
+| Problem | Solution |
+|---|---|
+| `No module named 'xcaper'` | The environment is not active: run `source xcaper-env/bin/activate` (or `conda activate xcaper`) first. |
+| `Fortran: False` although you want the Fortran backend | Install gfortran (step 2), then reinstall with `pip install --force-reinstall --no-cache-dir ...`, because pip otherwise reuses the package it built before. |
+| `git: command not found` | Install git, or download the release file and use option c of step 4. |
+| Build error mentioning `meson` or `numpy` in an editable install | Install the build tools first: `pip install meson-python meson ninja numpy`. |
+| A `.nc` file cannot be opened or saved | Install the extras: `pip install netCDF4` (or reinstall with `[era5]`). |
+| Downloading ERA5 fails with an authentication or licence error | Check `~/.cdsapirc` and accept the dataset licences on the CDS website (step 7). |
 
 ### Tested platforms
 
@@ -281,8 +397,9 @@ wherever the low-level shear is strong and the deep-layer shear weak.
 If you use xcaper, please cite this release (see `CITATION.cff`) and the
 original xcape:
 
-* Capuli, G. (2026): xcaper v1.0.0 (software). Zenodo.
+* Capuli, G. (2026): xcaper (software). Zenodo.
   [doi:10.5281/zenodo.24269592](https://doi.org/10.5281/zenodo.24269592)
+  (version 1.0.0; the Zenodo record links to every later version)
 * Lepore, C., Allen, J. and Abernathey, R. (2021): xcape v0.1.4 (software).
   Zenodo. [doi:10.5281/zenodo.5270332](https://doi.org/10.5281/zenodo.5270332)
 
