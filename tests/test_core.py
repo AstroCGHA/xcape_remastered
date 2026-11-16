@@ -11,13 +11,26 @@ from xcaper.core import HAS_FORTRAN, calc_cape, calc_lcl, calc_srh
 
 from .fixtures import dataset_ERA5pressurelevel, dataset_soundings, empty_dask_array  # noqa: F401
 
-# Every numerical test runs for both backends.  The numba kernels work in
-# double precision (the Fortran ones in single precision), hence the
-# slightly looser tolerance for SRH.
+# Every numerical test runs for both backends.
 METHODS = [pytest.param("fortran", marks=pytest.mark.skipif(not HAS_FORTRAN,
                                                             reason="Fortran extensions not built")),
            "numba"]
-SRH_DECIMAL = {"fortran": 5, "numba": 2}
+
+
+def assert_srh_close(actual, desired, method):
+    """Compare SRH with the stored xcape 0.1 reference values.
+
+    The Fortran kernels work in single precision, so the result can differ
+    from the reference in the last bits depending on the compiler (gfortran
+    13 and 14 reproduce it exactly, gfortran 15 differs by up to 2.5e-7
+    relative): allow 1e-6 relative, i.e. a few float32 rounding steps.
+    The numba kernels work in double precision and integrate slightly
+    differently: 2 decimals, as before.
+    """
+    if method == "fortran":
+        np.testing.assert_allclose(actual, desired, rtol=1e-6, atol=1e-4)
+    else:
+        np.testing.assert_almost_equal(actual, desired, 2)
 
 @pytest.fixture(scope='module')
 def p_t_td_1d(nlevs=20):
@@ -228,8 +241,8 @@ def test_calc_srh_sigma(dataset_soundings, output_var_in, n_returns, use_dask, v
             assert isinstance(mean_6km0, dsa.Array)
             assert isinstance(mean_6km1, dsa.Array)
             srh_rm, srh_lm, rm0, rm1, lm0, lm1, mean_6km0,mean_6km1 = dask.compute(srh_rm, srh_lm, rm0, rm1, lm0, lm1, mean_6km0,mean_6km1)
-        np.testing.assert_almost_equal(srh_rm, ds.SRH03_model_lev_rm.values, SRH_DECIMAL[method])
-        np.testing.assert_almost_equal(srh_lm, ds.SRH03_model_lev_lm.values, SRH_DECIMAL[method])
+        assert_srh_close(srh_rm, ds.SRH03_model_lev_rm.values, method)
+        assert_srh_close(srh_lm, ds.SRH03_model_lev_lm.values, method)
     else:
         srh_rm = returns[0]
         srh_lm = returns[1]
@@ -237,8 +250,8 @@ def test_calc_srh_sigma(dataset_soundings, output_var_in, n_returns, use_dask, v
             assert isinstance(srh_rm, dsa.Array)
             assert isinstance(srh_lm, dsa.Array)
             srh_rm, srh_lm = dask.compute(srh_rm, srh_lm)
-        np.testing.assert_almost_equal(srh_rm, ds.SRH03_model_lev_rm.values, SRH_DECIMAL[method])
-        np.testing.assert_almost_equal(srh_lm, ds.SRH03_model_lev_lm.values, SRH_DECIMAL[method])
+        assert_srh_close(srh_rm, ds.SRH03_model_lev_rm.values, method)
+        assert_srh_close(srh_lm, ds.SRH03_model_lev_lm.values, method)
 
 @pytest.mark.parametrize('use_dask', [False, True])
 @pytest.mark.parametrize('output_var_in, n_returns',
@@ -286,8 +299,8 @@ def test_calc_srh_pressure(dataset_ERA5pressurelevel, output_var_in, n_returns, 
             assert isinstance(mean_6km1, dsa.Array)
             srh_rm, srh_lm, rm0, rm1, lm0, lm1, mean_6km0,mean_6km1 = dask.compute(srh_rm, srh_lm, rm0, rm1, lm0, lm1, mean_6km0,mean_6km1)
 
-        np.testing.assert_almost_equal(srh_rm, dssurf.srh_rm.values, SRH_DECIMAL[method])
-        np.testing.assert_almost_equal(srh_lm, dssurf.srh_lm.values, SRH_DECIMAL[method])
+        assert_srh_close(srh_rm, dssurf.srh_rm.values, method)
+        assert_srh_close(srh_lm, dssurf.srh_lm.values, method)
     else:
         srh_rm = returns[0]
         srh_lm = returns[1]
@@ -296,8 +309,8 @@ def test_calc_srh_pressure(dataset_ERA5pressurelevel, output_var_in, n_returns, 
             assert isinstance(srh_lm, dsa.Array)
             srh_rm, srh_lm = dask.compute(srh_rm, srh_lm)
 
-        np.testing.assert_almost_equal(srh_rm, dssurf.srh_rm.values, SRH_DECIMAL[method])
-        np.testing.assert_almost_equal(srh_lm, dssurf.srh_lm.values, SRH_DECIMAL[method])
+        assert_srh_close(srh_rm, dssurf.srh_rm.values, method)
+        assert_srh_close(srh_lm, dssurf.srh_lm.values, method)
 
 
 # ---------------------------------------------------------------------------
