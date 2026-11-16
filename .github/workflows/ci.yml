@@ -1,0 +1,30 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        include:
+          # pre-release Python: reported, but allowed to fail
+          - python-version: "3.15"
+            experimental: true
+    continue-on-error: ${{ matrix.experimental == true }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - name: Install gfortran
+        run: sudo apt-get update && sudo apt-get install -y gfortran
+      - name: Build and install
+        run: python -m pip install ".[test,era5]"
+      - name: Test
+        run: python -m pytest -q
+      - name: Test without the Fortran backend
+        run: |
+          python -m pip install --force-reinstall --no-deps . -Csetup-args=-Dfortran=disabled
+          python -m pytest -q
